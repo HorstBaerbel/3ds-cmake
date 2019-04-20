@@ -83,7 +83,7 @@ function(add_gba_executable target)
                             DEPENDS ${target}
 							VERBATIM
         )
-    set_target_properties(${target} PROPERTIES LINK_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Map=${target_name}.map -specs=gba.specs")
+    set_target_properties(${target} PROPERTIES LINK_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -specs=gba.specs")
 	set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${target_name}.gba)
 endfunction()
 
