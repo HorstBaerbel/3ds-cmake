@@ -6,44 +6,55 @@ It aims to provide at least the same functionalities as the devkitPro makefiles.
 
 ## Table of Contents
 
+<!-- toc -->
+
 - [How to use it?](#how-to-use-it)
-  - [For 3DS projects](#for-3ds-projects)
-  - [For GBA projects](#for-gba-projects)
-  - [General](#general)
+  * [For 3DS projects](#for-3ds-projects)
+  * [For GBA projects](#for-gba-projects)
+  * [General](#general)
 - [3DS CMake files](#3ds-cmake-files)
-  - [The toolchain file (DevkitArm3DS\.cmake)](#the-toolchain-file-devkitarm3dscmake)
-    - [3DS](#3ds)
-    - [DKA_SUGGESTED_C_FLAGS](#dka_suggested_c_flags)
-    - [DKA_SUGGESTED_CXX_FLAGS](#dka_suggested_cxx_flags)
-    - [WITH_PORTLIBS](#with_portlibs)
-  - [FindCTRULIB\.cmake](#findctrulibcmake)
-  - [FindCITRO3D\.cmake](#findcitro3dcmake)
-  - [FindSF2D\.cmake](#findsf2dcmake)
-  - [FindSFTD\.cmake](#findsftdcmake)
-  - [FindSFIL\.cmake](#findsfilcmake)
-  - [FindZLIB\.cmake](#findzlibcmake)
-  - [FindPNG\.cmake](#findpngcmake)
-  - [FindJPEG\.cmake](#findjpegcmake)
-  - [FindFreetype\.cmake](#findfreetypecmake)
-  - [Tools3DS\.cmake](#tools3dscmake)
-    - [add_3dsx_target](#add_3dsx_target)
+  * [The toolchain file (DevkitArm3DS.cmake)](#the-toolchain-file-devkitarm3dscmake)
+    + [3DS](#3ds)
+    + [DKA_SUGGESTED_C_FLAGS](#dka_suggested_c_flags)
+    + [DKA_SUGGESTED_CXX_FLAGS](#dka_suggested_cxx_flags)
+    + [WITH_PORTLIBS](#with_portlibs)
+  * [FindCTRULIB.cmake](#findctrulibcmake)
+  * [FindCITRO3D.cmake](#findcitro3dcmake)
+  * [FindSF2D.cmake](#findsf2dcmake)
+  * [FindSFTD.cmake](#findsftdcmake)
+  * [FindSFIL.cmake](#findsfilcmake)
+  * [FindZLIB.cmake](#findzlibcmake)
+  * [FindPNG.cmake](#findpngcmake)
+  * [FindJPEG.cmake](#findjpegcmake)
+  * [FindFreetype.cmake](#findfreetypecmake)
+  * [Tools3DS.cmake](#tools3dscmake)
+    + [add_3dsx_target](#add_3dsx_target)
       - [add_3dsx_target(target [NO_SMDH])](#add_3dsx_targettarget-no_smdh)
       - [add_3dsx_target(target APP_TITLE APP_DESCRIPTION APP_AUTHOR [APP_ICON])](#add_3dsx_targettarget-app_title-app_description-app_author-app_icon)
-    - [add_cia_target(target RSF IMAGE SOUND [APP_TITLE APP_DESCRIPTION APP_AUTHOR [APP_ICON]])](#add_cia_targettarget-rsf-image-sound-app_title-app_description-app_author-app_icon)
-    - [add_cci_target(target RSF IMAGE SOUND [APP_TITLE APP_DESCRIPTION APP_AUTHOR [APP_ICON]])](#add_cci_targettarget-rsf-image-sound-app_title-app_description-app_author-app_icon)
-    - [add_netload_target(name target_or_file)](#add_netload_targetname-target_or_file)
-    - [add_binary_library(target input1 [input2 \.\.\.])](#add_binary_librarytarget-input1-input2-)
-    - [target_embed_file(target input1 [input2 \.\.\.])](#target_embed_filetarget-input1-input2-)
-    - [add_shbin(output input [entrypoint][shader_type])](#add_shbinoutput-input-entrypointshader_type)
-    - [generate_shbins(input1 [input2 \.\.\.])](#generate_shbinsinput1-input2-)
-    - [add_shbin_library(target input1 [input2 \.\.\.])](#add_shbin_librarytarget-input1-input2-)
-    - [target_embed_shader(target input1 [input2 \.\.\.])](#target_embed_shadertarget-input1-input2-)
-  - [Example of CMakeLists\.txt using ctrulib and shaders](#example-of-cmakeliststxt-using-ctrulib-and-shaders)
+    + [add_cia_target(target RSF IMAGE SOUND [APP_TITLE APP_DESCRIPTION APP_AUTHOR [APP_ICON]])](#add_cia_targettarget-rsf-image-sound-app_title-app_description-app_author-app_icon)
+    + [add_cci_target(target RSF IMAGE SOUND [APP_TITLE APP_DESCRIPTION APP_AUTHOR [APP_ICON]])](#add_cci_targettarget-rsf-image-sound-app_title-app_description-app_author-app_icon)
+    + [add_netload_target(name target_or_file)](#add_netload_targetname-target_or_file)
+    + [add_binary_library(target input1 [input2 ...])](#add_binary_librarytarget-input1-input2-)
+    + [target_embed_file(target input1 [input2 ...])](#target_embed_filetarget-input1-input2-)
+    + [add_shbin(output input [entrypoint][shader_type])](#add_shbinoutput-input-entrypointshader_type)
+    + [generate_shbins(input1 [input2 ...])](#generate_shbinsinput1-input2-)
+    + [add_shbin_library(target input1 [input2 ...])](#add_shbin_librarytarget-input1-input2-)
+    + [target_embed_shader(target input1 [input2 ...])](#target_embed_shadertarget-input1-input2-)
+  * [Example of CMakeLists.txt using ctrulib and shaders](#example-of-cmakeliststxt-using-ctrulib-and-shaders)
 - [GBA CMake files](#gba-cmake-files)
-  - [ToolsGBA\.cmake](#toolsgbacmake)
-    - [add_gba_executable( elf_executable )](#add_gba_executable-elf_executable-)
-    - [target_maxmod_file( elf_executable sound_files )](#target_maxmod_file-elf_executable-sound_files-)
-  - [Example of CMakeLists\.txt using assembler files, images and sounds](#example-of-cmakeliststxt-using-assembler-files-images-and-sounds)
+  * [The toolchain file (DevkitArmGBA.cmake)](#the-toolchain-file-devkitarmgbacmake)
+    + [GBA](#gba)
+    + [DKA_SUGGESTED_C_FLAGS](#dka_suggested_c_flags-1)
+    + [DKA_SUGGESTED_CXX_FLAGS](#dka_suggested_cxx_flags-1)
+    + [WITH_PORTLIBS](#with_portlibs-1)
+  * [ToolsGBA.cmake](#toolsgbacmake)
+    + [add_gba_executable( elf_executable )](#add_gba_executable-elf_executable-)
+    + [add_binary_library(target input1 [input2 ...])](#add_binary_librarytarget-input1-input2--1)
+    + [target_embed_file(target input1 [input2 ...])](#target_embed_filetarget-input1-input2--1)
+    + [target_maxmod_file( elf_executable sound_files )](#target_maxmod_file-elf_executable-sound_files-)
+  * [Example of CMakeLists.txt using assembler files, images and sounds](#example-of-cmakeliststxt-using-assembler-files-images-and-sounds)
+
+<!-- tocstop -->
 
 ## How to use it?
 
@@ -97,11 +108,11 @@ This CMake variable will be set so that you can test against it for projects tha
 
 #### DKA_SUGGESTED_C_FLAGS
 
-This CMake variable is set to `-fomit-frame-pointer -ffast-math`. Those are the recommended C flags for devkitArm projects but are non-mandatory.
+This CMake variable is set to `-fomit-frame-pointer -ffunction-sections`. Those are the recommended C flags for devkitArm projects but are non-mandatory.
 
 #### DKA_SUGGESTED_CXX_FLAGS
 
-This CMake variable is set to `-fomit-frame-pointer -ffast-math -fno-rtti -fno-exceptions -std=gnu++11`. Those are the recommended C++ flags for devkitArm projects but are non-mandatory.
+This CMake variable is set to `-fomit-frame-pointer -ffunction-sections -fno-rtti -fno-exceptions -std=gnu++11`. Those are the recommended C++ flags for devkitArm projects but are non-mandatory.
 
 #### WITH_PORTLIBS
 
@@ -603,11 +614,23 @@ add_3dsx_target(hello_cmake)
 
 ## GBA CMake files
 
-### The toolchain file (DevkitArm3DS.cmake)
+### The toolchain file (DevkitArmGBA.cmake)
 
 #### GBA
 
 This CMake variable will be set so that you can test against it for projects that can be built on other platforms.
+
+#### DKA_SUGGESTED_C_FLAGS
+
+This CMake variable is set to `-fomit-frame-pointer -ffast-math`. Those are the recommended C flags for devkitArm projects but are non-mandatory.
+
+#### DKA_SUGGESTED_CXX_FLAGS
+
+This CMake variable is set to `-fomit-frame-pointer -ffast-math -fno-rtti -fno-exceptions`. Those are the recommended C++ flags for devkitArm projects but are non-mandatory.
+
+#### WITH_PORTLIBS
+
+By default the portlibs folder will be used, it can be disabled by changing the value of WITH_PORTLIBS to OFF from the cache (or forcing the value from your CMakeLists.txt).
 
 ### ToolsGBA.cmake
 
@@ -616,6 +639,24 @@ This file must be included with `include(ToolsGBA)`. It provides several macros 
 #### add_gba_executable( elf_executable )
 
 Will generate a .gba file from the elf_executable.
+
+#### add_binary_library(target input1 [input2 ...])
+
+**/!\ Requires ASM to be enabled ( `enable_language(ASM)` or
+`project(yourprojectname C CXX ASM)`)**
+
+Converts the files given as input to arrays of their binary data. This is useful to embed resources into your project. For example, logo.bmp will generate the array `u8 logo_bmp[]` and its size `logo_bmp_size`. By linking this library, you will also have access to a generated header file called `logo_bmp.h` which contains the declarations you need to use it.
+
+Note : All dots in the filename are converted to `_`, and if it starts with a number, `_` will be prepended. For example `8x8.gas.tex` would give the name `_8x8_gas_tex`.
+
+#### target_embed_file(target input1 [input2 ...])
+
+This is the same as:
+
+```cmake
+add_binary_library(tempbinlib input1 [input2 ...])
+target_link_libraries(target tempbinlib)
+```
 
 #### target_maxmod_file( elf_executable sound_files )
 
