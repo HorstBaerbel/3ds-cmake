@@ -68,6 +68,8 @@ set(CMAKE_CXX_FLAGS "" CACHE STRING "C++ flags")
 set(CMAKE_ASM_FLAGS "-x assembler-with-cpp ${ARCH}" CACHE STRING "ASM flags")
 set(CMAKE_EXE_LINKER_FLAGS "" CACHE STRING "Executable LD flags")
 set(CMAKE_STATIC_LINKER_FLAGS "" CACHE STRING "Library LD flags")
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS} --specs=gba.specs") # Needed so _start is found
+set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS} --specs=gba.specs") # Needed so _start is found
 set(DKA_SUGGESTED_C_FLAGS "-fomit-frame-pointer -ffast-math")
 set(DKA_SUGGESTED_CXX_FLAGS "${DKA_SUGGESTED_C_FLAGS} -fno-rtti -fno-exceptions")
 
