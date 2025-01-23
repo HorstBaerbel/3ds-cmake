@@ -8,51 +8,55 @@ It aims to provide at least the same functionalities as the devkitPro makefiles.
 
 <!-- toc -->
 
-- [How to use it?](#how-to-use-it)
-  * [For 3DS projects](#for-3ds-projects)
-  * [For GBA projects](#for-gba-projects)
-  * [General](#general)
-- [3DS CMake files](#3ds-cmake-files)
-  * [The toolchain file (DevkitArm3DS.cmake)](#the-toolchain-file-devkitarm3dscmake)
-    + [3DS](#3ds)
-    + [DKA_SUGGESTED_C_FLAGS](#dka_suggested_c_flags)
-    + [DKA_SUGGESTED_CXX_FLAGS](#dka_suggested_cxx_flags)
-    + [WITH_PORTLIBS](#with_portlibs)
-  * [FindCTRULIB.cmake](#findctrulibcmake)
-  * [FindCITRO3D.cmake](#findcitro3dcmake)
-  * [FindSF2D.cmake](#findsf2dcmake)
-  * [FindSFTD.cmake](#findsftdcmake)
-  * [FindSFIL.cmake](#findsfilcmake)
-  * [FindZLIB.cmake](#findzlibcmake)
-  * [FindPNG.cmake](#findpngcmake)
-  * [FindJPEG.cmake](#findjpegcmake)
-  * [FindFreetype.cmake](#findfreetypecmake)
-  * [Tools3DS.cmake](#tools3dscmake)
-    + [add_3dsx_target](#add_3dsx_target)
-      - [add_3dsx_target(target [NO_SMDH])](#add_3dsx_targettarget-no_smdh)
-      - [add_3dsx_target(target APP_TITLE APP_DESCRIPTION APP_AUTHOR [APP_ICON])](#add_3dsx_targettarget-app_title-app_description-app_author-app_icon)
-    + [add_cia_target(target RSF IMAGE SOUND [APP_TITLE APP_DESCRIPTION APP_AUTHOR [APP_ICON]])](#add_cia_targettarget-rsf-image-sound-app_title-app_description-app_author-app_icon)
-    + [add_cci_target(target RSF IMAGE SOUND [APP_TITLE APP_DESCRIPTION APP_AUTHOR [APP_ICON]])](#add_cci_targettarget-rsf-image-sound-app_title-app_description-app_author-app_icon)
-    + [add_netload_target(name target_or_file)](#add_netload_targetname-target_or_file)
-    + [add_binary_library(target input1 [input2 ...])](#add_binary_librarytarget-input1-input2-)
-    + [target_embed_file(target input1 [input2 ...])](#target_embed_filetarget-input1-input2-)
-    + [add_shbin(output input [entrypoint][shader_type])](#add_shbinoutput-input-entrypointshader_type)
-    + [generate_shbins(input1 [input2 ...])](#generate_shbinsinput1-input2-)
-    + [add_shbin_library(target input1 [input2 ...])](#add_shbin_librarytarget-input1-input2-)
-    + [target_embed_shader(target input1 [input2 ...])](#target_embed_shadertarget-input1-input2-)
-  * [Example of CMakeLists.txt using ctrulib and shaders](#example-of-cmakeliststxt-using-ctrulib-and-shaders)
-- [GBA CMake files](#gba-cmake-files)
-  * [The toolchain file (DevkitArmGBA.cmake)](#the-toolchain-file-devkitarmgbacmake)
-    + [GBA](#gba)
-    + [DKA_SUGGESTED_C_FLAGS](#dka_suggested_c_flags-1)
-    + [DKA_SUGGESTED_CXX_FLAGS](#dka_suggested_cxx_flags-1)
-    + [WITH_PORTLIBS](#with_portlibs-1)
-  * [ToolsGBA.cmake](#toolsgbacmake)
-    + [add_gba_executable( elf_executable )](#add_gba_executable-elf_executable-)
-    + [add_binary_library(target input1 [input2 ...])](#add_binary_librarytarget-input1-input2--1)
-    + [target_embed_file(target input1 [input2 ...])](#target_embed_filetarget-input1-input2--1)
-    + [target_maxmod_file( elf_executable sound_files )](#target_maxmod_file-elf_executable-sound_files-)
-  * [Example of CMakeLists.txt using assembler files, images and sounds](#example-of-cmakeliststxt-using-assembler-files-images-and-sounds)
+- [3ds-cmake](#3ds-cmake)
+  - [Table of Contents](#table-of-contents)
+  - [How to use it?](#how-to-use-it)
+    - [For 3DS projects](#for-3ds-projects)
+    - [For GBA projects](#for-gba-projects)
+    - [General](#general)
+  - [3DS CMake files](#3ds-cmake-files)
+    - [The toolchain file (DevkitArm3DS.cmake)](#the-toolchain-file-devkitarm3dscmake)
+      - [3DS](#3ds)
+      - [DKA\_SUGGESTED\_C\_FLAGS](#dka_suggested_c_flags)
+      - [DKA\_SUGGESTED\_CXX\_FLAGS](#dka_suggested_cxx_flags)
+      - [WITH\_PORTLIBS](#with_portlibs)
+    - [FindCTRULIB.cmake](#findctrulibcmake)
+    - [FindCITRO3D.cmake](#findcitro3dcmake)
+    - [FindSF2D.cmake](#findsf2dcmake)
+    - [FindSFTD.cmake](#findsftdcmake)
+    - [FindSFIL.cmake](#findsfilcmake)
+    - [FindZLIB.cmake](#findzlibcmake)
+    - [FindPNG.cmake](#findpngcmake)
+    - [FindJPEG.cmake](#findjpegcmake)
+    - [FindFreetype.cmake](#findfreetypecmake)
+    - [Tools3DS.cmake](#tools3dscmake)
+      - [add\_3dsx\_target](#add_3dsx_target)
+        - [add\_3dsx\_target(target \[NO\_SMDH\])](#add_3dsx_targettarget-no_smdh)
+        - [add\_3dsx\_target(target APP\_TITLE APP\_DESCRIPTION APP\_AUTHOR \[APP\_ICON\])](#add_3dsx_targettarget-app_title-app_description-app_author-app_icon)
+      - [add\_cia\_target(target RSF IMAGE SOUND \[APP\_TITLE APP\_DESCRIPTION APP\_AUTHOR \[APP\_ICON\]\])](#add_cia_targettarget-rsf-image-sound-app_title-app_description-app_author-app_icon)
+      - [add\_cci\_target(target RSF IMAGE SOUND \[APP\_TITLE APP\_DESCRIPTION APP\_AUTHOR \[APP\_ICON\]\])](#add_cci_targettarget-rsf-image-sound-app_title-app_description-app_author-app_icon)
+      - [add\_netload\_target(name target\_or\_file)](#add_netload_targetname-target_or_file)
+      - [add\_binary\_library(target input1 \[input2 ...\])](#add_binary_librarytarget-input1-input2-)
+      - [target\_embed\_file(target input1 \[input2 ...\])](#target_embed_filetarget-input1-input2-)
+      - [add\_shbin(output input \[entrypoint\]\[shader\_type\])](#add_shbinoutput-input-entrypointshader_type)
+      - [generate\_shbins(input1 \[input2 ...\])](#generate_shbinsinput1-input2-)
+      - [add\_shbin\_library(target input1 \[input2 ...\])](#add_shbin_librarytarget-input1-input2-)
+      - [target\_embed\_shader(target input1 \[input2 ...\])](#target_embed_shadertarget-input1-input2-)
+    - [Example of CMakeLists.txt using ctrulib and shaders](#example-of-cmakeliststxt-using-ctrulib-and-shaders)
+  - [GBA CMake files](#gba-cmake-files)
+    - [The toolchain file (DevkitArmGBA.cmake)](#the-toolchain-file-devkitarmgbacmake)
+      - [GBA](#gba)
+      - [DKA\_SUGGESTED\_C\_FLAGS](#dka_suggested_c_flags-1)
+      - [DKA\_SUGGESTED\_CXX\_FLAGS](#dka_suggested_cxx_flags-1)
+      - [WITH\_PORTLIBS](#with_portlibs-1)
+    - [ToolsGBA.cmake](#toolsgbacmake)
+      - [add\_gba\_executables( target game\_name game\_code maker\_code version)](#add_gba_executables-target-game_name-game_code-maker_code-version)
+      - [add\_binary\_library(target input1 \[input2 ...\])](#add_binary_librarytarget-input1-input2--1)
+      - [target\_embed\_file(target input1 \[input2 ...\])](#target_embed_filetarget-input1-input2--1)
+      - [target\_maxmod\_file( target sound\_files )](#target_maxmod_file-target-sound_files-)
+      - [add\_map\_file( target )](#add_map_file-target-)
+      - [add\_sections\_file( target )](#add_sections_file-target-)
+    - [Example of CMakeLists.txt using assembler files, images and sounds](#example-of-cmakeliststxt-using-assembler-files-images-and-sounds)
 
 <!-- tocstop -->
 
@@ -636,9 +640,13 @@ By default the portlibs folder will be used, it can be disabled by changing the 
 
 This file must be included with `include(ToolsGBA)`. It provides several macros related to GBA development.
 
-#### add_gba_executable( elf_executable )
+#### add_gba_executables( target game_name game_code maker_code version)
 
-Will generate a .gba file from the elf_executable.
+Will generate a .elf and .gba file from the target.
+* game_name: 12 uppercase character game name
+* game_code: 4 uppercase character game code
+* maker_code: 2 uppercase character maker code
+* version: game version number in [0,255]
 
 #### add_binary_library(target input1 [input2 ...])
 
@@ -658,25 +666,34 @@ add_binary_library(tempbinlib input1 [input2 ...])
 target_link_libraries(target tempbinlib)
 ```
 
-#### target_maxmod_file( elf_executable sound_files )
+#### target_maxmod_file( target sound_files )
 
-Will generate a soundbank file for the MaxMOD music player from sound_files and add it to elf_executable.
+Will generate a soundbank file for the MaxMOD music player from sound_files and add it to target.
+
+#### add_map_file( target )
+
+Will generate a .map file from the .elf file for analysis and add it to the target.
+
+#### add_sections_file( target )
+
+Will generate a .md file from the .elf file for binary / section analysis and add it to the target.
 
 ### Example of CMakeLists.txt using assembler files, images and sounds
 
 ```cmake
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.21)
 
 # Note that you must copy the cmake folder and the DevkitArmGBA.cmake file in this directory
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/DevkitArmGBA.cmake)
 # Add the cmake folder to the modules paths, so that we can use the tools
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
+
+project(hello_world)
+
 # ASM must be enabled to support .S files
 enable_language(ASM)
 # Include all the macros and tools needed for GBA development.
 include(ToolsGBA)
-
-project(hello_world)
 
 # List all the source files in our directory
 LIST(APPEND SOURCE_FILES
@@ -699,19 +716,23 @@ LIST(APPEND TARGET_LIBRARIES
 
 link_directories(${TARGET_LIBRARIES})
 include_directories(${INCLUDE_DIRECTORIES})
-# Create elf file
-add_executable(hello_world.elf ${SOURCE_FILES} ${INCLUDE_FILES} ${EXTRA_DATA_FILES})
-# Generate the .gba from the elf
-add_gba_executable(hello_world.elf)
+# Create GBA binary
+add_executable(hello_world ${SOURCE_FILES} ${INCLUDE_FILES} ${EXTRA_DATA_FILES})
+# Generate .elf and the .gba file from the binary
+add_gba_executables(hello_world "GAME_NAME" "GMCD" "MC" 1)
+# Output .map file for the .elf file
+add_map_file(hello_world)
+# Output .md file for the section analysis of the .elf file
+add_sections_file(hello_world)
 # Link the application, libgba and maxmod
-target_link_libraries(hello_world.elf gba mm)
+target_link_libraries(hello_world gba mm)
 
 # List all the MaxMOD music files
 file(GLOB_RECURSE MUSIC_FILES
 	./music/*
 )
 # Build soundbank file from music files
-target_maxmod_file(hello_world.elf ${MUSIC_FILES})
+target_maxmod_file(hello_world ${MUSIC_FILES})
 
 # List all the binary data files to be included
 file(GLOB_RECURSE DATA_FILES
