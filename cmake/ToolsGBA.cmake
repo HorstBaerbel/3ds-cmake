@@ -75,16 +75,73 @@ endif()
 ### EXECUTABLES ###
 ###################
 
-function(add_gba_executable target)
-	get_filename_component(target_name ${target} NAME_WE)
-	add_custom_target(${target_name}.gba ALL SOURCES
-                            COMMAND ${OBJCOPY} -v -O binary ${target} ${target_name}.gba
-							COMMAND ${GBAFIX} ${target_name}.gba
-                            DEPENDS ${target}
-							VERBATIM
-        )
-    set_target_properties(${target} PROPERTIES LINK_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -specs=gba.specs")
-	set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${target_name}.gba)
+# Build .elf and .gba file from binary target
+# binaryTarget: Name of CMake target generating the binary file
+# title: Game title, 12 uppercase chars
+# gameCode: Game code, 4 uppercase chars
+# makeCode: Maker code, 2 uppercase chars
+# version: Version byte [0,255]
+# See: https://github.com/devkitPro/gba-tools and: http://problemkaputt.de/gbatek-gba-cartridge-header.htm
+function(add_gba_executables binaryTarget gameTitle gameCode makerCode version)
+    set(binFile $<TARGET_FILE:${binaryTarget}>)
+    get_filename_component(binBasePath ${binFile} NAME_WE)
+    set(elfFile ${binBasePath}.elf)
+    add_custom_command(TARGET ${binaryTarget} POST_BUILD
+        COMMAND
+            ${CMAKE_COMMAND} -E copy "${binFile}" "${elfFile}"
+        VERBATIM
+        DEPENDS
+            ${binaryTarget}
+    )
+    set(gbaFile ${binBasePath}.gba)
+    add_custom_command(TARGET ${binaryTarget} POST_BUILD
+        COMMAND
+            ${OBJCOPY} -O binary "${binFile}" "${gbaFile}"
+        COMMAND
+            ${GBAFIX} "${gbaFile}" -p -t${gameTitle} -c${gameCode} -m${makerCode} -r${version}
+        VERBATIM
+        DEPENDS
+            ${binaryTarget}
+    )
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${elfFile})
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${gbaFile})
+endfunction()
+
+# Build .map file for binary target
+# binaryTarget: Name of CMake target generating the binary file
+function(add_map_file binaryTarget)
+    set(binFile $<TARGET_FILE:${binaryTarget}>)
+    get_filename_component(binBasePath ${binFile} NAME_WE)
+    set(mapFile ${binBasePath}.map)
+    set_target_properties(${binaryTarget} PROPERTIES LINK_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Map=${binaryTarget}.map")
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${mapFile})
+endfunction()
+
+# Build section analysis file for binary target
+# binaryTarget: Name of CMake target generating the binary file
+function(add_sections_file binaryTarget)
+    set(binFile $<TARGET_FILE:${binaryTarget}>)
+    get_filename_component(binBasePath ${binFile} NAME_WE)
+    set(analysisFile ${binBasePath}_sections.md)
+    find_file(convert_nm_sysv_to_md
+        NAMES
+            convert_nm_sysv_to_md.cmake
+        PATHS
+            ${CMAKE_MODULE_PATH}
+        NO_CMAKE_FIND_ROOT_PATH
+        REQUIRED
+    )
+    add_custom_command(TARGET ${binaryTarget} POST_BUILD
+        COMMAND
+            ${CMAKE_NM} --format=sysv --size-sort "${binFile}" >> "${analysisFile}"
+        VERBATIM
+        COMMAND
+            cmake -P "${convert_nm_sysv_to_md}" "${analysisFile}" "${analysisFile}"
+        VERBATIM
+        DEPENDS
+            ${binaryTarget}
+    )
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${analysisFile})
 endfunction()
 
 ######################
@@ -109,9 +166,9 @@ macro(add_binary_library libtarget)
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/binaries_asm)
     # Generate the assembly file, and create the new target
     add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/binaries_asm/${libtarget}.s
-                        COMMAND ${BIN2S} ${ARGN} > ${CMAKE_CURRENT_BINARY_DIR}/binaries_asm/${libtarget}.s
-                        DEPENDS ${ARGN}
-                        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+        COMMAND ${BIN2S} ${ARGN} > ${CMAKE_CURRENT_BINARY_DIR}/binaries_asm/${libtarget}.s
+        DEPENDS ${ARGN}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     )
     add_library(${libtarget} ${CMAKE_CURRENT_BINARY_DIR}/binaries_asm/${libtarget}.s)
     target_include_directories(${libtarget} INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/${libtarget}_include)
@@ -138,14 +195,14 @@ macro(target_maxmod_file _target)
 	set(__BIN_FILE_NAME "soundbank_bin")
 	configure_file(${__toolsgbadir}/bin2s_header.h.in ${BUILD_DIR}/soundbank_bin.h)
     add_custom_command(OUTPUT ${BUILD_DIR}/soundbank.bin.o ${BUILD_DIR}/soundbank.bin ${BUILD_DIR}/soundbank.h
-            COMMAND ${MMUTIL} ${ARGN} -o${BUILD_DIR}/soundbank.bin -h${BUILD_DIR}/soundbank.h
-            COMMAND ${BIN2S} ${BUILD_DIR}/soundbank.bin | ${CMAKE_AS} -o ${BUILD_DIR}/soundbank.bin.o
-            DEPENDS ${ARGN}
-            WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+        COMMAND ${MMUTIL} ${ARGN} -o${BUILD_DIR}/soundbank.bin -h${BUILD_DIR}/soundbank.h
+        COMMAND ${BIN2S} ${BUILD_DIR}/soundbank.bin | ${CMAKE_AS} -o ${BUILD_DIR}/soundbank.bin.o
+        DEPENDS ${ARGN}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     )
     add_custom_target(mm_soundbank
-            DEPENDS ${BUILD_DIR}/soundbank.bin.o
-            WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+        DEPENDS ${BUILD_DIR}/soundbank.bin.o
+        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     )
     set_target_properties(mm_soundbank PROPERTIES LINKER_LANGUAGE C)
 	include_directories(${BUILD_DIR})
