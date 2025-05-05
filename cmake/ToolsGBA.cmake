@@ -133,7 +133,7 @@ function(add_sections_file binaryTarget)
     )
     add_custom_command(TARGET ${binaryTarget} POST_BUILD
         COMMAND
-            ${CMAKE_NM} --format=sysv --size-sort "${binFile}" >> "${analysisFile}"
+            ${CMAKE_NM} --format=sysv --numeric-sort --demangle=auto "${binFile}" > "${analysisFile}"
         VERBATIM
         COMMAND
             cmake -P "${convert_nm_sysv_to_md}" "${analysisFile}" "${analysisFile}"
